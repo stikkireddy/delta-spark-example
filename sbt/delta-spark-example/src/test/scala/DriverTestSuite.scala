@@ -9,7 +9,6 @@ class TestBase extends FunSuite with BeforeAndAfterAllConfigMap {
 
   override def beforeAll(cm: ConfigMap) :Unit = {
     val conf = new SparkConf()
-//      .setAppName("dbxapp")
       .setMaster("local")
       .set("spark.default.parallelism", "1")
 

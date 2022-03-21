@@ -11,8 +11,17 @@ object Driver {
     val spark = SparkSession.builder.appName("test").getOrCreate()
     spark.range(100).write.format("delta").save(tempDeltaLoc)
     spark.read.format("delta").load(tempDeltaLoc).show(10)
-    spark.sql("OPTIMIZE delta.`" + tempDeltaLoc + "`")
-    spark.sql("DESCRIBE HISTORY delta.`" + tempDeltaLoc + "`").show(numRows = 100, truncate = false)
-    tempDir.toFile.delete()
+    try {
+      spark.sql("OPTIMIZE delta.`" + tempDeltaLoc + "`")
+      spark.sql("DESCRIBE HISTORY delta.`" + tempDeltaLoc + "`").show(numRows = 100, truncate = false)
+      println("Clean up directory")
+      tempDir.toFile.delete()
+    } catch {
+      case a: Exception =>
+        println("Clean up directory")
+        tempDir.toFile.delete()
+        throw a
+    }
   }
 }
+
